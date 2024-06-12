@@ -9,7 +9,8 @@ import os
 class ImageEditor:
     def __init__(self, panel):
         self.panel = panel
-        self.img = Image.open("logo.png").resize((600, 700))
+        self.original_img = Image.open(os.path.join(os.path.dirname(__file__), "logo.png"))
+        self.img = self.original_img.resize((600, 700))
         self.outputImage = self.img
 
     def display_image(self):
@@ -66,10 +67,15 @@ class ImageEditor:
         self.outputImage = self.img
         self.display_image()
 
-    def resize(self):
-        self.img = self.img.resize((500, 350))
+    def scaling(self, width, height):
+        self.img = self.original_img.resize((width, height), Image.LANCZOS)
         self.outputImage = self.img
         self.display_image()
+
+    def scaling_image():
+        width = int(width_entry.get())
+        height = int(height_entry.get())
+        image_editor.resize(width, height)
 
     def crop(self):
         self.img = self.img.crop((200, 200, 300, 300))
@@ -77,7 +83,7 @@ class ImageEditor:
         self.display_image()
 
     def reset(self):
-        self.img = Image.open("logo.png").resize((600, 700))
+        self.img = self.original_img.resize((600, 700))
         self.outputImage = self.img
         self.display_image()
 
@@ -93,7 +99,8 @@ class ImageEditor:
     def change_image(self):
         imgname = filedialog.askopenfilename(title="Change Image")
         if imgname:
-            self.img = Image.open(imgname).resize((600, 600))
+            self.original_img = Image.open(imgname)
+            self.img = self.original_img.resize((600, 600))
             self.outputImage = self.img
             self.display_image()
 
@@ -101,3 +108,6 @@ class ImageEditor:
         savefile = filedialog.asksaveasfile(defaultextension=".jpg")
         if savefile:
             self.outputImage.save(savefile)
+
+    def close(self, mains):
+        mains.destroy()

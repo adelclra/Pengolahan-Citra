@@ -48,7 +48,7 @@ colorSlider.place(x=1070, y=240)
 
 whiteboard_button = tkinter.Button(mains, text="Open Whiteboard", command=open_whiteboard, bg="#344C64")
 whiteboard_button.configure(font=('poppins',11,'bold'),foreground='#ffffff')
-whiteboard_button.place(x=1210, y=440)
+whiteboard_button.place(x=860, y=490)
 
 btnRotateLeft = Button(mains, text='Rotate Left', width=25, command=image_editor.rotate_left, bg="#344C64")
 btnRotateLeft.configure(font=('poppins',11,'bold'),foreground='#ffffff')
@@ -78,13 +78,23 @@ btnFlip = Button(mains, text='Mirror', width=25, command=image_editor.flip, bg="
 btnFlip.configure(font=('poppins',11,'bold'),foreground='#ffffff')
 btnFlip.place(x=805, y=340)
 
-btnResize = Button(mains, text='Resize', width=25, command=image_editor.resize, bg="#344C64")
-btnResize.configure(font=('poppins',11,'bold'),foreground='#ffffff')
-btnResize.place(x=805, y=405)
+width_label = Label(mains, text="Width:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
+width_label.place(x=1200, y=450)
+width_entry = Entry(mains)
+width_entry.place(x=1270, y=450)
+
+height_label = Label(mains, text="Height:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
+height_label.place(x=1200, y=480)
+height_entry = Entry(mains)
+height_entry.place(x=1270, y=480)
+
+btnScale = Button(mains, text='Resize', width=25, command=image_editor.scaling_image, bg="#344C64")
+btnScale.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
+btnScale.place(x=1160, y=510)
 
 btnCrop = Button(mains, text='Crop', width=25, command=image_editor.crop, bg="#344C64")
 btnCrop.configure(font=('poppins',11,'bold'),foreground='#ffffff')
-btnCrop.place(x=805, y=470)
+btnCrop.place(x=805, y=400)
 
 x_translation_label = Label(mains, text="X Translation:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
 x_translation_label.place(x=1155, y=340)
@@ -102,6 +112,6 @@ btnTranslation.place(x=1160, y=400)
 
 btnSave = Button(mains, text='Save', width=60, command=image_editor.save, bg="#344C64")
 btnSave.configure(font=('poppins',11,'bold'),foreground='#ffffff')
-btnSave.place(x=890, y=700)
+btnSave.place(x=890, y=730)
 
 mains.mainloop()
