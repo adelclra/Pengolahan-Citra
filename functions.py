@@ -81,6 +81,15 @@ class ImageEditor:
         self.outputImage = self.img
         self.display_image()
 
+    def translate(self, x_translation, y_translation):
+        self.outputImage = self.img.transform(self.img.size, Image.AFFINE, (1, 0, x_translation, 0, 1, y_translation))
+        self.display_image()
+
+    def apply_translation():
+        x_translation = int(x_translation_entry.get())
+        y_translation = int(y_translation_entry.get())
+        image_editor.translate(x_translation, y_translation)
+
     def change_image(self):
         imgname = filedialog.askopenfilename(title="Change Image")
         if imgname:
@@ -92,6 +101,3 @@ class ImageEditor:
         savefile = filedialog.asksaveasfile(defaultextension=".jpg")
         if savefile:
             self.outputImage.save(savefile)
-    
-    def close(self, mains):
-        mains.destroy()
