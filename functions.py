@@ -108,11 +108,11 @@ class ImageEditor:
         self.apply_adjustments()
 
     def rotate_left(self):
-        self.outputImage = self.outputImage.rotate(90, expand=True)
+        self.outputImage = self.outputImage.rotate(-90, expand=True)
         self.display_image()
 
     def rotate_right(self):
-        self.outputImage = self.outputImage.rotate(-90, expand=True)
+        self.outputImage = self.outputImage.rotate(90, expand=True)
         self.display_image()
 
     def rotate_90deg(self):

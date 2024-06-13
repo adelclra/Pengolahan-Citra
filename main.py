@@ -6,7 +6,6 @@ import subprocess
 import os
 
 def open_whiteboard():
-    # Ensure the correct relative path is used
     whiteboard_path = os.path.join(os.path.dirname(__file__), "whiteboard.py")
     subprocess.Popen(["python", whiteboard_path])
 
