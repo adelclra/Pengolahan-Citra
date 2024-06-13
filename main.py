@@ -7,6 +7,7 @@ import subprocess
 def open_whiteboard():
     subprocess.Popen(["python", "whiteboard.py"])
 
+# Creating the window for image editor
 mains = Tk()
 space = " " * 215
 screen_width = mains.winfo_screenwidth()
@@ -21,10 +22,7 @@ canvas.grid(row=0, column=0, rowspan=12, padx=50, pady=50)
 crop_size_label = Label(mains, text="", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
 crop_size_label.place(x=380, y=15)
 
-panel = Label(mains)
-panel.grid(row=0, column=0, rowspan=12, padx=50, pady=50)
-
-image_editor = ImageEditor(canvas, crop_size_label, panel)
+image_editor = ImageEditor(canvas, crop_size_label)
 image_editor.display_image()
 
 brightnessSlider = Scale(mains, label="Brightness", from_=0, to=2, orient=HORIZONTAL, length=200,
@@ -97,7 +95,7 @@ btnScale = Button(mains, text='Resize', width=25, command=image_editor.scaling_i
 btnScale.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
 btnScale.place(x=1160, y=510)
 
-btnCrop = Button(mains, text='Crop', width=25, command=image_editor.crop, bg="#344C64")
+btnCrop = Button(mains, text='Crop', width=25, command=image_editor.crop_image, bg="#344C64")
 btnCrop.configure(font=('poppins',11,'bold'),foreground='#ffffff')
 btnCrop.place(x=805, y=400)
 

@@ -4,13 +4,12 @@ from tkinter import filedialog
 import os
 
 class ImageEditor:
-    def __init__(self, canvas, crop_size_label, panel):
+    def __init__(self, canvas, crop_size_label):
         self.canvas = canvas
         self.crop_size_label = crop_size_label
         self.original_img = Image.open(os.path.join(os.path.dirname(__file__), "logo.png"))
         self.img = self.original_img.resize((600, 700))
         self.outputImage = self.img
-        self.panel = panel
 
         self.rect = None
         self.start_x = None
@@ -54,8 +53,8 @@ class ImageEditor:
 
     def display_image(self):
         dispimage = ImageTk.PhotoImage(self.outputImage)
-        self.panel.configure(image=dispimage)
-        self.panel.image = dispimage
+        self.canvas.create_image(0, 0, image=dispimage, anchor=NW)
+        self.canvas.image = dispimage
 
     def brightness_callback(self, brightness_pos):
         brightness_pos = float(brightness_pos)
@@ -106,20 +105,15 @@ class ImageEditor:
         self.outputImage = self.img
         self.display_image()
 
-    def resize(self, width, height):
+    def scaling(self, width, height):
         self.img = self.original_img.resize((width, height), Image.LANCZOS)
         self.outputImage = self.img
         self.display_image()
-    
-    def scaling_image(self):
-        width = int(self.width_entry.get())
-        height = int(self.height_entry.get())
-        self.resize(width, height)
 
-    def crop(self):
-        self.img = self.img.crop((200, 200, 300, 300))
-        self.outputImage = self.img
-        self.display_image()
+    def scaling_image(self):
+        width = int(width_entry.get())
+        height = int(height_entry.get())
+        self.scaling(width, height)
 
     def reset(self):
         self.img = self.original_img.resize((600, 700))
@@ -130,10 +124,10 @@ class ImageEditor:
         self.outputImage = self.img.transform(self.img.size, Image.AFFINE, (1, 0, x_translation, 0, 1, y_translation))
         self.display_image()
 
-    def apply_translation():
+    def apply_translation(self):
         x_translation = int(x_translation_entry.get())
         y_translation = int(y_translation_entry.get())
-        image_editor.translate(x_translation, y_translation)
+        self.translate(x_translation, y_translation)
 
     def change_image(self):
         imgname = filedialog.askopenfilename(title="Change Image")
