@@ -1,68 +1,88 @@
 import tkinter as tk
 from tkinter.colorchooser import askcolor
+from tkinter import filedialog
+from PIL import Image, ImageDraw
+import os
 
-def start_drawing(event):
-    global is_drawing, prev_x, prev_y
-    is_drawing = True
-    prev_x, prev_y = event.x, event.y
+class WhiteboardApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Whiteboard App")
+        
+        self.canvas = tk.Canvas(root, bg='white', width=800, height=600)
+        self.canvas.pack(expand=tk.YES, fill=tk.BOTH)
+        
+        self.button_frame = tk.Frame(root)
+        self.button_frame.pack(fill=tk.X)
 
-def draw(event):
-    global is_drawing, prev_x, prev_y
-    if is_drawing:
-        current_x, current_y = event.x, event.y
-        canvas.create_line(prev_x, prev_y, current_x, current_y, fill=drawing_color, width=line_width, capstyle=tk.ROUND, smooth=True)
-        prev_x, prev_y = current_x, current_y
+        self.color_button = tk.Button(self.button_frame, text='Change Color', command=self.change_color)
+        self.color_button.pack(side=tk.LEFT, padx=5)
 
-def stop_drawing(event):
-    global is_drawing
-    is_drawing = False
+        self.clear_button = tk.Button(self.button_frame, text='Clear Canvas', command=self.clear_canvas)
+        self.clear_button.pack(side=tk.LEFT, padx=5)
 
-def change_pen_color():
-    global drawing_color
-    color = askcolor()[1]
-    if color:
-        drawing_color = color
+        self.line_width_label = tk.Label(self.button_frame, text='Line Width:')
+        self.line_width_label.pack(side=tk.LEFT, padx=5)
 
-def change_line_width(value):
-    global line_width
-    line_width = int(value)
+        self.line_width_slider = tk.Scale(self.button_frame, from_=1, to=10, orient=tk.HORIZONTAL)
+        self.line_width_slider.set(2)
+        self.line_width_slider.pack(side=tk.LEFT, padx=5)
 
-root = tk.Tk()
-root.title("Whiteboard App")
+        self.save_button = tk.Button(self.button_frame, text='Save as Image', command=self.save_as_image)
+        self.save_button.pack(side=tk.LEFT, padx=5)
 
-canvas = tk.Canvas(root, bg="white")
-canvas.pack(fill="both", expand=True)
+        self.text_widget_label = tk.Label(self.button_frame, text='Notes:')
+        self.text_widget_label.pack(side=tk.LEFT, padx=5)
 
-is_drawing = False
-drawing_color = "black"
-line_width = 2
+        self.text_widget = tk.Text(self.button_frame, height=2, width=30)
+        self.text_widget.pack(side=tk.LEFT, padx=5)
 
-root.geometry("800x600")
+        self.color = 'black'
+        self.old_x = None
+        self.old_y = None
+        self.line_width = self.line_width_slider.get()
+        self.eraser_on = False
+        self.active_button = self.color_button
 
-# Create a frame to hold the controls in the same line
-controls_frame = tk.Frame(root)
-controls_frame.pack(side="top", fill="x")
+        self.canvas.bind('<Button-1>', self.start_draw)
+        self.canvas.bind('<B1-Motion>', self.draw)
+        self.canvas.bind('<ButtonRelease-1>', self.reset)
 
-color_button = tk.Button(controls_frame, text="Change Color", command=change_pen_color)
-clear_button = tk.Button(controls_frame, text="Clear Canvas", command=lambda: canvas.delete("all"))
+    def change_color(self):
+        self.eraser_on = False
+        self.color = askcolor(color=self.color)[1]
 
-color_button.pack(side="left", padx=5, pady=5)
-clear_button.pack(side="left", padx=5, pady=5)
+    def clear_canvas(self):
+        self.canvas.delete('all')
 
-line_width_label = tk.Label(controls_frame, text="Line Width:")
-line_width_label.pack(side="left", padx=5, pady=5)
+    def save_as_image(self):
+        file_path = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[("PNG files", '*.png'), ("All files", '*.*')])
+        if file_path:
+            self.save_canvas(file_path)
 
-line_width_slider = tk.Scale(controls_frame, from_=1, to=10, orient="horizontal", command=lambda val: change_line_width(val))
-line_width_slider.set(line_width)
-line_width_slider.pack(side="left", padx=5, pady=5)
+    def save_canvas(self, file_path):
+        # Create an image from the canvas content
+        self.canvas.update()
+        self.canvas.postscript(file='temp_canvas.ps', colormode='color')
+        image = Image.open('temp_canvas.ps')
+        image.save(file_path, 'png')
+        os.remove('temp_canvas.ps')
 
-canvas.bind("<Button-1>", start_drawing)
-canvas.bind("<B1-Motion>", draw)
-canvas.bind("<ButtonRelease-1>", stop_drawing)
+    def start_draw(self, event):
+        self.old_x = event.x
+        self.old_y = event.y
 
-text_widget_label = tk.Label(controls_frame, text="Notes:")
-text_widget_label.pack(side="top", padx=5, pady=5)
-text_widget = tk.Text(controls_frame, height=6, width=120)
-text_widget.pack(side="left", padx=5, pady=5)
+    def draw(self, event):
+        self.line_width = self.line_width_slider.get()
+        self.canvas.create_line(self.old_x, self.old_y, event.x, event.y, width=self.line_width, fill=self.color, capstyle=tk.ROUND, smooth=tk.TRUE, splinesteps=36)
+        self.old_x = event.x
+        self.old_y = event.y
 
-root.mainloop()
+    def reset(self, event):
+        self.old_x = None
+        self.old_y = None
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    WhiteboardApp(root)
+    root.mainloop()
