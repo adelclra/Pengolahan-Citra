@@ -11,11 +11,16 @@ class ImageEditor:
         self.contrast_slider = contrast_slider
         self.color_slider = color_slider
         self.sharpness_slider = sharpness_slider
-        
+
         self.original_img = Image.open(os.path.join(os.path.dirname(__file__), "logo.png"))
         self.img = self.original_img.resize((600, 700))
         self.outputImage = self.img
         self.original_format = self.original_img.format
+
+        self.current_brightness = 1.0
+        self.current_contrast = 1.0
+        self.current_color = 1.0
+        self.current_sharpness = 1.0
 
         self.rect = None
         self.start_x = None
@@ -23,13 +28,34 @@ class ImageEditor:
         self.end_x = None
         self.end_y = None
 
-        # Initialize translation entries
-        self.x_translation_entry = Entry()
-        self.y_translation_entry = Entry()
+        self.init_canvas_events()
 
+    def init_canvas_events(self):
         self.canvas.bind("<ButtonPress-1>", self.on_press)
         self.canvas.bind("<B1-Motion>", self.on_drag)
         self.canvas.bind("<ButtonRelease-1>", self.on_release)
+
+    def apply_adjustments(self):
+        # Start with the original image
+        self.outputImage = self.original_img.resize((600, 700))
+
+        # Apply brightness
+        enhancer = ImageEnhance.Brightness(self.outputImage)
+        self.outputImage = enhancer.enhance(self.current_brightness)
+
+        # Apply contrast
+        enhancer = ImageEnhance.Contrast(self.outputImage)
+        self.outputImage = enhancer.enhance(self.current_contrast)
+
+        # Apply color
+        enhancer = ImageEnhance.Color(self.outputImage)
+        self.outputImage = enhancer.enhance(self.current_color)
+
+        # Apply sharpness
+        enhancer = ImageEnhance.Sharpness(self.outputImage)
+        self.outputImage = enhancer.enhance(self.current_sharpness)
+
+        self.display_image()
 
     def on_press(self, event):
         self.start_x = self.canvas.canvasx(event.x)
@@ -66,28 +92,20 @@ class ImageEditor:
         self.canvas.image = dispimage
 
     def brightness_callback(self, brightness_pos):
-        brightness_pos = float(brightness_pos)
-        enhancer = ImageEnhance.Brightness(self.outputImage)
-        self.outputImage = enhancer.enhance(brightness_pos)
-        self.display_image()
+        self.current_brightness = float(brightness_pos)
+        self.apply_adjustments()
 
     def contrast_callback(self, contrast_pos):
-        contrast_pos = float(contrast_pos)
-        enhancer = ImageEnhance.Contrast(self.outputImage)
-        self.outputImage = enhancer.enhance(contrast_pos)
-        self.display_image()
+        self.current_contrast = float(contrast_pos)
+        self.apply_adjustments()
 
     def sharpen_callback(self, sharpness_pos):
-        sharpness_pos = float(sharpness_pos)
-        enhancer = ImageEnhance.Sharpness(self.outputImage)
-        self.outputImage = enhancer.enhance(sharpness_pos)
-        self.display_image()
+        self.current_sharpness = float(sharpness_pos)
+        self.apply_adjustments()
 
     def color_callback(self, color_pos):
-        color_pos = float(color_pos)
-        enhancer = ImageEnhance.Color(self.outputImage)
-        self.outputImage = enhancer.enhance(color_pos)
-        self.display_image()
+        self.current_color = float(color_pos)
+        self.apply_adjustments()
 
     def rotate_left(self):
         self.outputImage = self.outputImage.rotate(90, expand=True)
@@ -119,30 +137,36 @@ class ImageEditor:
         self.scaling(width, height)
 
     def reset(self):
-        self.outputImage = self.original_img.resize((600, 700))
-        self.display_image()
-        
-        # Reset the sliders to their default positions
+        self.current_brightness = 1.0
+        self.current_contrast = 1.0
+        self.current_color = 1.0
+        self.current_sharpness = 1.0
+
         self.brightness_slider.set(1.0)
         self.contrast_slider.set(1.0)
         self.color_slider.set(1.0)
         self.sharpness_slider.set(1.0)
+
+        self.apply_adjustments()
 
     def translate(self, x_translation, y_translation):
         self.outputImage = self.outputImage.transform(self.outputImage.size, Image.AFFINE, (1, 0, x_translation, 0, 1, y_translation))
         self.display_image()
 
     def apply_translation(self):
-        x_translation = int(self.x_translation_entry.get())
-        y_translation = int(self.y_translation_entry.get())
-        self.translate(x_translation, y_translation)
+        try:
+            x_translation = int(self.x_translation_entry.get())
+            y_translation = int(self.y_translation_entry.get())
+            self.translate(x_translation, y_translation)
+        except ValueError:
+            print("Invalid translation values")
 
     def change_image(self):
         imgname = filedialog.askopenfilename(title="Change Image")
         if imgname:
             self.original_img = Image.open(imgname)
-            self.outputImage = self.original_img.resize((600, 700))
             self.original_format = self.original_img.format
+            self.reset()
             self.display_image()
 
     def save(self):

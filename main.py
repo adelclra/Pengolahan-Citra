@@ -10,6 +10,9 @@ def open_whiteboard():
     whiteboard_path = os.path.join(os.path.dirname(__file__), "whiteboard.py")
     subprocess.Popen(["python", whiteboard_path])
 
+def reset_image(event=None):
+    image_editor.reset()
+
 # Creating the window for image editor
 mains = Tk()
 space = " " * 215
@@ -74,6 +77,9 @@ reset_button = Button(mains, text="Reset", command=image_editor.reset, bg="#344C
 reset_button.configure(font=('poppins', 10, 'bold'), foreground='#ffffff')
 reset_button.place(x=330, y=15)
 
+# Bind Ctrl+R to the reset_image function
+mains.bind('<Control-r>', reset_image)
+
 btnChaImg = Button(mains, text='Change Image', width=25, command=image_editor.change_image, bg="#344C64", activebackground="#EBB9D4")
 btnChaImg.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
 btnChaImg.place(x=1160, y=100)
@@ -96,10 +102,6 @@ btnScale = Button(mains, text='Resize', width=25, command=image_editor.scaling_i
 btnScale.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
 btnScale.place(x=1160, y=510)
 
-btnCrop = Button(mains, text='Crop', width=25, command=image_editor.crop_image, bg="#344C64")
-btnCrop.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
-btnCrop.place(x=805, y=400)
-
 x_translation_label = Label(mains, text="X Translation:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
 x_translation_label.place(x=1155, y=340)
 image_editor.x_translation_entry = Entry(mains)
@@ -116,7 +118,7 @@ btnTranslation.place(x=1160, y=400)
 
 whiteboard_button = Button(mains, text="Open Whiteboard", command=open_whiteboard, bg="#344C64")
 whiteboard_button.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
-whiteboard_button.place(x=860, y=490)
+whiteboard_button.place(x=855, y=400)
 
 btnSave = Button(mains, text='Save', width=60, command=image_editor.save, bg="#344C64")
 btnSave.configure(font=('poppins', 11, 'bold'), foreground='#ffffff')
