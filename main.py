@@ -7,7 +7,6 @@ import subprocess
 def open_whiteboard():
     subprocess.Popen(["python", "whiteboard.py"])
 
-# Creating the window for image editor
 mains = Tk()
 space = " " * 215
 screen_width = mains.winfo_screenwidth()
@@ -16,10 +15,16 @@ mains.geometry(f"{screen_width}x{screen_height}")
 mains.title(f"{space}Image Editor")
 mains.configure(bg='#102C57')
 
+canvas = Canvas(mains, width=600, height=700)
+canvas.grid(row=0, column=0, rowspan=12, padx=50, pady=50)
+
+crop_size_label = Label(mains, text="", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
+crop_size_label.place(x=380, y=15)
+
 panel = Label(mains)
 panel.grid(row=0, column=0, rowspan=12, padx=50, pady=50)
 
-image_editor = ImageEditor(panel)
+image_editor = ImageEditor(canvas, crop_size_label, panel)
 image_editor.display_image()
 
 brightnessSlider = Scale(mains, label="Brightness", from_=0, to=2, orient=HORIZONTAL, length=200,
@@ -99,12 +104,12 @@ btnCrop.place(x=805, y=400)
 x_translation_label = Label(mains, text="X Translation:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
 x_translation_label.place(x=1155, y=340)
 x_translation_entry = Entry(mains)
-x_translation_entry.place(x=1270, y=340)
+x_translation_entry.place(x=1290, y=340)
 
 y_translation_label = Label(mains, text="Y Translation:", bg="#344C64", fg="#ffffff", font=('poppins', 11, 'bold'))
 y_translation_label.place(x=1155, y=370)
 y_translation_entry = Entry(mains)
-y_translation_entry.place(x=1270, y=370)
+y_translation_entry.place(x=1290, y=370)
 
 btnTranslation = Button(mains, text='Translate', width=25, command=image_editor.apply_translation, bg="#344C64")
 btnTranslation.configure(font=('poppins',11,'bold'),foreground='#ffffff')
